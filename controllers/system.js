@@ -73,14 +73,45 @@ exports.newSystem = function (req, res) {
     ]);
 };
 
-exports.getSystem = function (req, res) {
-    // var user_id = req.user.id;
-    // Grow.find({user_id: user_id}, function (err, grows) {
-    //     if (!grows) {
-    //         return res.status(400).send({msg: 'The email address you have entered is already associated with another account.'});
-    //     } else {
-    //         res.status(200).send(grows);
-    //     }
-    // });
+exports.getSystems = function (req, res) {
+    async.waterfall([
+        function (done) {
+            System.find({}, function (err, system) {
+                done(null, system);
+            });
+
+        },
+        function (system, done) {
+            var our_systems = system;
+            request(api_root + '/universe/system_kills/?datasource=tranquility', function (error, response) {
+                var system_stats;
+                if (error) {
+                    res.status(400).send({msg: 'Error getting system information'});
+                } else {
+                    system_stats = JSON.parse(response.body);
+                    //TODO Clean this up, it sucks.
+                    var response_systems = [];
+                    system_stats.filter(function(system){
+                        var filtered_object = {};
+                        for(var index in our_systems){
+                            if(our_systems[index].system_id == system.system_id){
+                                filtered_object.system_name = our_systems[index].system_name;
+                                filtered_object.security_status = our_systems[index].security_status;
+                                filtered_object.ship_kills = system.ship_kills;
+                                filtered_object.npc_kills = system.npc_kills;
+                                filtered_object.pod_kills = system.pod_kills;
+                                response_systems.push(filtered_object);
+                            }
+                        }
+                        return null;
+                    });
+                    res.status(200).send(response_systems);
+                }
+            });
+        }
+    ]);
 };
 
+function matchSystems(id_array){
+
+}

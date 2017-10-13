@@ -1,8 +1,8 @@
 angular.module('ProjectHarvestApp')
     .factory('Dashboard', function($http) {
         return {
-            // getGrows: function(data) {
-            //     return $http.get('/getGrows', data);
-            // }
+            getSystems: function(data) {
+                return $http.get('/getSystems', data);
+            }
         };
     });

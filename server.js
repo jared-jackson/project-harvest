@@ -77,7 +77,7 @@ app.get('/auth/twitter/callback', userController.authTwitterCallback);
 
 //Grow Routes
 app.post('/newSystem', userController.ensureAuthenticated, systemController.newSystem);
-app.get('/getSystem', userController.ensureAuthenticated, systemController.getSystem);
+app.get('/getSystems', userController.ensureAuthenticated, systemController.getSystems);
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'app', 'index.html'));
