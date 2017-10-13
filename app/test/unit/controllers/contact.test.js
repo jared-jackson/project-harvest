@@ -1,7 +1,7 @@
 describe('ContactCtrl', function() {
   var httpBackend, controller, scope;
 
-  beforeEach(module('BlumeApp'));
+  beforeEach(module('ProjectHarvestApp'));
 
   beforeEach(inject(function($httpBackend, $controller) {
     scope = {};

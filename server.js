@@ -20,7 +20,7 @@ var User = require('./models/User');
 // Controllers
 var userController = require('./controllers/user');
 var contactController = require('./controllers/contact');
-var growController = require('./controllers/grow');
+var systemController = require('./controllers/system');
 
 var app = express();
 
@@ -76,8 +76,8 @@ app.post('/auth/twitter', userController.authTwitter);
 app.get('/auth/twitter/callback', userController.authTwitterCallback);
 
 //Grow Routes
-app.post('/createGrow', userController.ensureAuthenticated, growController.createGrow);
-app.get('/getGrows', userController.ensureAuthenticated, growController.getGrows);
+app.post('/newSystem', userController.ensureAuthenticated, systemController.newSystem);
+app.get('/getSystem', userController.ensureAuthenticated, systemController.getSystem);
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'app', 'index.html'));

@@ -1,4 +1,4 @@
-angular.module('BlumeApp')
+angular.module('ProjectHarvestApp')
   .factory('Account', function($http) {
     return {
       updateProfile: function(data) {

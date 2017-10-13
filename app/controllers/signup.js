@@ -1,4 +1,4 @@
-angular.module('BlumeApp')
+angular.module('ProjectHarvestApp')
   .controller('SignupCtrl', function($scope, $rootScope, $location, $window, $auth) {
     $scope.signup = function() {
       $auth.signup($scope.user)

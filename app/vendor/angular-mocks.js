@@ -1253,7 +1253,7 @@ angular.mock.dump = function(object) {
  *
  * For extra convenience, `whenRoute` and `expectRoute` shortcuts are available. These methods offer colon
  * delimited matching of the url path, ignoring the query string. This allows declarations
- * similar to how application routes are configured with `$routeProvider`. Because these methods convert
+ * similar to how application controllers are configured with `$routeProvider`. Because these methods convert
  * the definition url to regex, declaration order is important. Combined with query parameter parsing,
  * the following is possible:
  *

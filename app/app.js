@@ -1,4 +1,4 @@
-angular.module('BlumeApp', ['ngRoute', 'satellizer'])
+angular.module('ProjectHarvestApp', ['ngRoute', 'satellizer'])
   .config(function($routeProvider, $locationProvider, $authProvider) {
     $locationProvider.html5Mode(true);
 
@@ -13,8 +13,8 @@ angular.module('BlumeApp', ['ngRoute', 'satellizer'])
         controller: 'ContactCtrl'
       })
       .when('/create', {
-          templateUrl: 'partials/createGrow.html',
-          controller: 'GrowCtrl'
+          templateUrl: 'partials/new-system.html',
+          controller: 'SystemCtrl'
       })
       .when('/login', {
         templateUrl: 'partials/login.html',

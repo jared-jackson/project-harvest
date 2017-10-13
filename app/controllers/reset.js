@@ -1,4 +1,4 @@
-angular.module('BlumeApp')
+angular.module('ProjectHarvestApp')
   .controller('ResetCtrl', function($scope, Account) {
     $scope.resetPassword = function() {
       Account.resetPassword($scope.user)

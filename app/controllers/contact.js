@@ -1,4 +1,4 @@
-angular.module('BlumeApp')
+angular.module('ProjectHarvestApp')
   .controller('ContactCtrl', function($scope, Contact) {
     $scope.sendContactForm = function() {
       Contact.send($scope.contact)

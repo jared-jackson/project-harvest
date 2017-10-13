@@ -1,8 +1,8 @@
-angular.module('BlumeApp')
+angular.module('ProjectHarvestApp')
     .factory('Dashboard', function($http) {
         return {
-            getGrows: function(data) {
-                return $http.get('/getGrows', data);
-            }
+            // getGrows: function(data) {
+            //     return $http.get('/getGrows', data);
+            // }
         };
     });

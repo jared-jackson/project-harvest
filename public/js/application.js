@@ -1,1 +1,439 @@
-function assembleRadials(t){var e,r=[];for(var a in t)for(var o=0;o<=6;o++){var n="#plant"+t[a]+o;e=new ProgressBar.Circle(n,{color:"#8759f2",strokeWidth:4,trailWidth:1,easing:"easeInOut",duration:2400,text:{autoStyleContainer:!1},from:{color:"#ffc300",width:2},to:{color:"#1fd2ca",width:4},step:function(t,e){e.path.setAttribute("stroke",t.color),e.path.setAttribute("stroke-width",t.width);var r=Math.round(100*e.value());0===r?e.setText("0%"):e.setText(r+"%")}}),r.push(e),e.text.style.fontFamily='"Raleway", Helvetica, sans-serif',e.text.style.fontSize="2rem"}return r}angular.module("BlumeApp",["ngRoute","satellizer"]).config(["$routeProvider","$locationProvider","$authProvider",function(t,e,r){function a(t,e){e.isAuthenticated()&&t.path("/")}function o(t,e){e.isAuthenticated()||t.path("/login")}o.$inject=["$location","$auth"],a.$inject=["$location","$auth"],e.html5Mode(!0),t.when("/",{templateUrl:"partials/home.html",controller:"DashboardCtrl",resolve:{loginRequired:o}}).when("/contact",{templateUrl:"partials/contact.html",controller:"ContactCtrl"}).when("/create",{templateUrl:"partials/createGrow.html",controller:"GrowCtrl"}).when("/login",{templateUrl:"partials/login.html",controller:"LoginCtrl",resolve:{skipIfAuthenticated:a}}).when("/signup",{templateUrl:"partials/signup.html",controller:"SignupCtrl",resolve:{skipIfAuthenticated:a}}).when("/account",{templateUrl:"partials/profile.html",controller:"ProfileCtrl",resolve:{loginRequired:o}}).when("/forgot",{templateUrl:"partials/forgot.html",controller:"ForgotCtrl",resolve:{skipIfAuthenticated:a}}).when("/reset/:token",{templateUrl:"partials/reset.html",controller:"ResetCtrl",resolve:{skipIfAuthenticated:a}}).otherwise({templateUrl:"partials/404.html"}),r.loginUrl="/login",r.signupUrl="/signup",r.facebook({url:"/auth/facebook",clientId:"980220002068787",redirectUri:"http://localhost:3000/auth/facebook/callback"}),r.google({url:"/auth/google",clientId:"631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com"}),r.twitter({url:"/auth/twitter"})}]).run(["$rootScope","$window",function(t,e){e.localStorage.user&&(t.currentUser=JSON.parse(e.localStorage.user))}]),angular.module("BlumeApp").controller("ContactCtrl",["$scope","Contact",function(t,e){t.sendContactForm=function(){e.send(t.contact).then(function(e){t.messages={success:[e.data]}})["catch"](function(e){t.messages={error:Array.isArray(e.data)?e.data:[e.data]}})}}]),angular.module("BlumeApp").controller("DashboardCtrl",["$scope","$rootScope","$http","$location","$window","$auth","Dashboard",function(t,e,r,a,o,n,s){s.getGrows(e.currentUser).then(function(e){t.current_grows=e.data,t.plant_ids=$.map(e.data,function(t){var e=[];for(var r in t.grow_items)e.push(t.grow_items[r].plant_id);return e}),t.plant_vitals=$.map(e.data,function(t){var e=[];for(var r in t.grow_items)e.push(t.grow_items[r].plant_vitals);return e}),setTimeout(function(){var e=0;t.circles=assembleRadials(t.plant_ids,t.plant_vitals),$.map(t.plant_vitals,function(r){for(var a in r)t.circles[e].animate(r[a]),e++;return null}),t.loading=!1},200)})["catch"](function(e){t.messages={error:Array.isArray(e.data)?e.data:[e.data]}})}]),angular.module("BlumeApp").controller("ForgotCtrl",["$scope","Account",function(t,e){t.forgotPassword=function(){e.forgotPassword(t.user).then(function(e){t.messages={success:[e.data]}})["catch"](function(e){t.messages={error:Array.isArray(e.data)?e.data:[e.data]}})}}]),angular.module("BlumeApp").controller("GrowCtrl",["$scope","$rootScope","$http","$location","$window","$auth","Account","GrowControls",function(t,e,r,a,o,n,s,c){t.createGrow=function(){var e={grow_name:t.grow.name,environment:t.grow.environment,grow_items:["White Widow","Sour Diesel","Blue Dream"]};c.createGrow(e).then(function(t){a.path("/")})["catch"](function(e){t.messages={error:Array.isArray(e.data)?e.data:[e.data]}})}}]),angular.module("BlumeApp").controller("HeaderCtrl",["$scope","$location","$window","$auth",function(t,e,r,a){t.isActive=function(t){return t===e.path()},t.isAuthenticated=function(){return a.isAuthenticated()},t.logout=function(){a.logout(),delete r.localStorage.user,e.path("/")}}]),angular.module("BlumeApp").controller("LoginCtrl",["$scope","$rootScope","$location","$window","$auth",function(t,e,r,a,o){t.login=function(){o.login(t.user).then(function(t){e.currentUser=t.data.user,a.localStorage.user=JSON.stringify(t.data.user),r.path("/")})["catch"](function(e){t.messages={error:Array.isArray(e.data)?e.data:[e.data]}})},t.authenticate=function(n){o.authenticate(n).then(function(t){e.currentUser=t.data.user,a.localStorage.user=JSON.stringify(t.data.user),r.path("/")})["catch"](function(e){e.error?t.messages={error:[{msg:e.error}]}:e.data&&(t.messages={error:[e.data]})})}}]),angular.module("BlumeApp").controller("ProfileCtrl",["$scope","$rootScope","$location","$window","$auth","Account",function(t,e,r,a,o,n){t.profile=e.currentUser,t.updateProfile=function(){n.updateProfile(t.profile).then(function(r){e.currentUser=r.data.user,a.localStorage.user=JSON.stringify(r.data.user),t.messages={success:[r.data]}})["catch"](function(e){t.messages={error:Array.isArray(e.data)?e.data:[e.data]}})},t.changePassword=function(){n.changePassword(t.profile).then(function(e){t.messages={success:[e.data]}})["catch"](function(e){t.messages={error:Array.isArray(e.data)?e.data:[e.data]}})},t.link=function(e){o.link(e).then(function(e){t.messages={success:[e.data]}})["catch"](function(e){a.scrollTo(0,0),t.messages={error:[e.data]}})},t.unlink=function(e){o.unlink(e).then(function(){t.messages={success:[response.data]}})["catch"](function(e){t.messages={error:[e.data]}})},t.deleteAccount=function(){n.deleteAccount().then(function(){o.logout(),delete a.localStorage.user,r.path("/")})["catch"](function(e){t.messages={error:[e.data]}})}}]),angular.module("BlumeApp").controller("ResetCtrl",["$scope","Account",function(t,e){t.resetPassword=function(){e.resetPassword(t.user).then(function(e){t.messages={success:[e.data]}})["catch"](function(e){t.messages={error:Array.isArray(e.data)?e.data:[e.data]}})}}]),angular.module("BlumeApp").controller("SignupCtrl",["$scope","$rootScope","$location","$window","$auth",function(t,e,r,a,o){t.signup=function(){o.signup(t.user).then(function(t){o.setToken(t),e.currentUser=t.data.user,a.localStorage.user=JSON.stringify(t.data.user),r.path("/")})["catch"](function(e){t.messages={error:Array.isArray(e.data)?e.data:[e.data]}})},t.authenticate=function(n){o.authenticate(n).then(function(t){e.currentUser=t.data.user,a.localStorage.user=JSON.stringify(t.data.user),r.path("/")})["catch"](function(e){e.error?t.messages={error:[{msg:e.error}]}:e.data&&(t.messages={error:[e.data]})})}}]),angular.module("BlumeApp").factory("Account",["$http",function(t){return{updateProfile:function(e){return t.put("/account",e)},changePassword:function(e){return t.put("/account",e)},deleteAccount:function(){return t["delete"]("/account")},forgotPassword:function(e){return t.post("/forgot",e)},resetPassword:function(e){return t.post("/reset",e)}}}]),angular.module("BlumeApp").factory("Contact",["$http",function(t){return{send:function(e){return t.post("/contact",e)}}}]),angular.module("BlumeApp").factory("Dashboard",["$http",function(t){return{getGrows:function(e){return t.get("/getGrows",e)}}}]),angular.module("BlumeApp").factory("GrowControls",["$http",function(t){return{createGrow:function(e){return t.post("/createGrow",e)}}}]);
+angular.module('ProjectHarvestApp', ['ngRoute', 'satellizer'])
+  .config(["$routeProvider", "$locationProvider", "$authProvider", function($routeProvider, $locationProvider, $authProvider) {
+    loginRequired.$inject = ["$location", "$auth"];
+    skipIfAuthenticated.$inject = ["$location", "$auth"];
+    $locationProvider.html5Mode(true);
+
+    $routeProvider
+      .when('/', {
+        templateUrl: 'partials/home.html',
+        controller: 'DashboardCtrl',
+        resolve: { loginRequired: loginRequired }
+      })
+      .when('/contact', {
+        templateUrl: 'partials/contact.html',
+        controller: 'ContactCtrl'
+      })
+      .when('/create', {
+          templateUrl: 'partials/new-system.html',
+          controller: 'SystemCtrl'
+      })
+      .when('/login', {
+        templateUrl: 'partials/login.html',
+        controller: 'LoginCtrl',
+        resolve: { skipIfAuthenticated: skipIfAuthenticated }
+      })
+      .when('/signup', {
+        templateUrl: 'partials/signup.html',
+        controller: 'SignupCtrl',
+        resolve: { skipIfAuthenticated: skipIfAuthenticated }
+      })
+      .when('/account', {
+        templateUrl: 'partials/profile.html',
+        controller: 'ProfileCtrl',
+        resolve: { loginRequired: loginRequired }
+      })
+      .when('/forgot', {
+        templateUrl: 'partials/forgot.html',
+        controller: 'ForgotCtrl',
+        resolve: { skipIfAuthenticated: skipIfAuthenticated }
+      })
+      .when('/reset/:token', {
+        templateUrl: 'partials/reset.html',
+        controller: 'ResetCtrl',
+        resolve: { skipIfAuthenticated: skipIfAuthenticated }
+      })
+      .otherwise({
+        templateUrl: 'partials/404.html'
+      });
+
+    $authProvider.loginUrl = '/login';
+    $authProvider.signupUrl = '/signup';
+    $authProvider.facebook({
+      url: '/auth/facebook',
+      clientId: '980220002068787',
+      redirectUri: 'http://localhost:3000/auth/facebook/callback'
+    });
+    $authProvider.google({
+      url: '/auth/google',
+      clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com'
+    });
+    $authProvider.twitter({
+      url: '/auth/twitter'
+    });
+
+    function skipIfAuthenticated($location, $auth) {
+      if ($auth.isAuthenticated()) {
+        $location.path('/');
+      }
+    }
+
+    function loginRequired($location, $auth) {
+      if (!$auth.isAuthenticated()) {
+        $location.path('/login');
+      }
+    }
+  }])
+  .run(["$rootScope", "$window", function($rootScope, $window) {
+    if ($window.localStorage.user) {
+      $rootScope.currentUser = JSON.parse($window.localStorage.user);
+    }
+  }]);
+
+angular.module('ProjectHarvestApp')
+  .controller('ContactCtrl', ["$scope", "Contact", function($scope, Contact) {
+    $scope.sendContactForm = function() {
+      Contact.send($scope.contact)
+        .then(function(response) {
+          $scope.messages = {
+            success: [response.data]
+          };
+        })
+        .catch(function(response) {
+          $scope.messages = {
+            error: Array.isArray(response.data) ? response.data : [response.data]
+          };
+        });
+    };
+  }]);
+
+angular.module('ProjectHarvestApp')
+    .controller('DashboardCtrl', ["$scope", "$rootScope", "$http", "$location", "$window", "$auth", "Dashboard", function ($scope, $rootScope, $http, $location, $window, $auth, Dashboard) {
+
+        // Dashboard.getGrows($rootScope.currentUser)
+        //     .then(function (response) {
+        //         $scope.current_grows = response.data;
+        //         $scope.plant_ids = $.map(response.data, function (value) {
+        //             var plant_ids = [];
+        //             for (var x in value.grow_items) {
+        //                 plant_ids.push(value.grow_items[x].plant_id);
+        //             }
+        //             return plant_ids;
+        //         });
+        //         $scope.plant_vitals = $.map(response.data, function (value) {
+        //             var plant_vitals = [];
+        //             for (var x in value.grow_items) {
+        //                 plant_vitals.push(value.grow_items[x].plant_vitals);
+        //             }
+        //             return plant_vitals;
+        //         });
+        //         setTimeout(function () {
+        //             var index = 0;
+        //             $scope.circles = assembleRadials($scope.plant_ids, $scope.plant_vitals);
+        //             $.map($scope.plant_vitals, function (vital) {
+        //                 for (var plant_vital in vital) {
+        //                     $scope.circles[index].animate(vital[plant_vital]);
+        //                     index++;
+        //                 }
+        //                 return null;
+        //             });
+        //             $scope.loading = false;
+        //         }, 200);
+        //     })
+        //     .catch(function (response) {
+        //         $scope.messages = {
+        //             error: Array.isArray(response.data) ? response.data : [response.data]
+        //         };
+        //     });
+    }]);
+
+function assembleRadials(ids) {
+    var radial;
+    var circles = [];
+    for (var id in ids) {
+        for (var x = 0; x <= 6; x++) { // Watson only returns us with 5 emotions. Typically wouldn't hard code a value like this.
+            var container = '#plant' + ids[id] + x;
+            radial = new ProgressBar.Circle(container, {
+                color: '#8759f2',
+                strokeWidth: 4,
+                trailWidth: 1,
+                easing: 'easeInOut',
+                duration: 2400,
+                text: {
+                    autoStyleContainer: false
+                },
+                from: {color: '#ffc300', width: 2},
+                to: {color: '#1fd2ca', width: 4},
+                step: function (state, circle) {
+                    circle.path.setAttribute('stroke', state.color);
+                    circle.path.setAttribute('stroke-width', state.width);
+                    var value = Math.round(circle.value() * 100);
+                    if (value === 0) {
+                        circle.setText('0%');
+                    } else {
+                        circle.setText(value + "%");
+                    }
+                }
+            });
+            circles.push(radial);
+            radial.text.style.fontFamily = '"Raleway", Helvetica, sans-serif';
+            radial.text.style.fontSize = '2rem';
+        }
+    }
+    return circles;
+}
+
+
+angular.module('ProjectHarvestApp')
+  .controller('ForgotCtrl', ["$scope", "Account", function($scope, Account) {
+    $scope.forgotPassword = function() {
+      Account.forgotPassword($scope.user)
+        .then(function(response) {
+          $scope.messages = {
+            success: [response.data]
+          };
+        })
+        .catch(function(response) {
+          $scope.messages = {
+            error: Array.isArray(response.data) ? response.data : [response.data]
+          };
+        });
+    };
+  }]);
+
+angular.module('ProjectHarvestApp')
+  .controller('HeaderCtrl', ["$scope", "$location", "$window", "$auth", function($scope, $location, $window, $auth) {
+    $scope.isActive = function (viewLocation) {
+      return viewLocation === $location.path();
+    };
+    
+    $scope.isAuthenticated = function() {
+      return $auth.isAuthenticated();
+    };
+    
+    $scope.logout = function() {
+      $auth.logout();
+      delete $window.localStorage.user;
+      $location.path('/');
+    };
+  }]);
+
+angular.module('ProjectHarvestApp')
+  .controller('LoginCtrl', ["$scope", "$rootScope", "$location", "$window", "$auth", function($scope, $rootScope, $location, $window, $auth) {
+    $scope.login = function() {
+      $auth.login($scope.user)
+        .then(function(response) {
+          $rootScope.currentUser = response.data.user;
+          $window.localStorage.user = JSON.stringify(response.data.user);
+          $location.path('/');
+        })
+        .catch(function(response) {
+          $scope.messages = {
+            error: Array.isArray(response.data) ? response.data : [response.data]
+          };
+        });
+    };
+
+    $scope.authenticate = function(provider) {
+      $auth.authenticate(provider)
+        .then(function(response) {
+          $rootScope.currentUser = response.data.user;
+          $window.localStorage.user = JSON.stringify(response.data.user);
+          $location.path('/');
+        })
+        .catch(function(response) {
+          if (response.error) {
+            $scope.messages = {
+              error: [{ msg: response.error }]
+            };
+          } else if (response.data) {
+            $scope.messages = {
+              error: [response.data]
+            };
+          }
+        });
+    };
+  }]);
+angular.module('ProjectHarvestApp')
+  .controller('ProfileCtrl', ["$scope", "$rootScope", "$location", "$window", "$auth", "Account", function($scope, $rootScope, $location, $window, $auth, Account) {
+    $scope.profile = $rootScope.currentUser;
+
+    $scope.updateProfile = function() {
+      Account.updateProfile($scope.profile)
+        .then(function(response) {
+          $rootScope.currentUser = response.data.user;
+          $window.localStorage.user = JSON.stringify(response.data.user);
+          $scope.messages = {
+            success: [response.data]
+          };
+        })
+        .catch(function(response) {
+          $scope.messages = {
+            error: Array.isArray(response.data) ? response.data : [response.data]
+          };
+        });
+    };
+
+    $scope.changePassword = function() {
+      Account.changePassword($scope.profile)
+        .then(function(response) {
+          $scope.messages = {
+            success: [response.data]
+          };
+        })
+        .catch(function(response) {
+          $scope.messages = {
+            error: Array.isArray(response.data) ? response.data : [response.data]
+          };
+        });
+    };
+
+    $scope.link = function(provider) {
+      $auth.link(provider)
+        .then(function(response) {
+          $scope.messages = {
+            success: [response.data]
+          };
+        })
+        .catch(function(response) {
+          $window.scrollTo(0, 0);
+          $scope.messages = {
+            error: [response.data]
+          };
+        });
+    };
+    $scope.unlink = function(provider) {
+      $auth.unlink(provider)
+        .then(function() {
+          $scope.messages = {
+            success: [response.data]
+          };
+        })
+        .catch(function(response) {
+          $scope.messages = {
+            error: [response.data]
+          };
+        });
+    };
+
+    $scope.deleteAccount = function() {
+      Account.deleteAccount()
+        .then(function() {
+          $auth.logout();
+          delete $window.localStorage.user;
+          $location.path('/');
+        })
+        .catch(function(response) {
+          $scope.messages = {
+            error: [response.data]
+          };
+        });
+    };
+  }]);
+angular.module('ProjectHarvestApp')
+  .controller('ResetCtrl', ["$scope", "Account", function($scope, Account) {
+    $scope.resetPassword = function() {
+      Account.resetPassword($scope.user)
+        .then(function(response) {
+          $scope.messages = {
+            success: [response.data]
+          };
+        })
+        .catch(function(response) {
+          $scope.messages = {
+            error: Array.isArray(response.data) ? response.data : [response.data]
+          };
+        });
+    }
+  }]);
+
+angular.module('ProjectHarvestApp')
+  .controller('SignupCtrl', ["$scope", "$rootScope", "$location", "$window", "$auth", function($scope, $rootScope, $location, $window, $auth) {
+    $scope.signup = function() {
+      $auth.signup($scope.user)
+        .then(function(response) {
+          $auth.setToken(response);
+          $rootScope.currentUser = response.data.user;
+          $window.localStorage.user = JSON.stringify(response.data.user);
+          $location.path('/');
+        })
+        .catch(function(response) {
+          $scope.messages = {
+            error: Array.isArray(response.data) ? response.data : [response.data]
+          };
+        });
+    };
+
+    $scope.authenticate = function(provider) {
+      $auth.authenticate(provider)
+        .then(function(response) {
+          $rootScope.currentUser = response.data.user;
+          $window.localStorage.user = JSON.stringify(response.data.user);
+          $location.path('/');
+        })
+        .catch(function(response) {
+          if (response.error) {
+            $scope.messages = {
+              error: [{ msg: response.error }]
+            };
+          } else if (response.data) {
+            $scope.messages = {
+              error: [response.data]
+            };
+          }
+        });
+    };
+  }]);
+angular.module('ProjectHarvestApp')
+    .controller('SystemCtrl', ["$scope", "$rootScope", "$http", "$location", "$window", "$auth", "Account", "System", function ($scope, $rootScope, $http, $location, $window, $auth, Account, System) {
+        $scope.newSystem = function () {
+            var new_system = {
+                system_name: $scope.system.name
+            };
+            System.newSystem(new_system)
+                .then(function (response) {
+                    $location.path('/');
+                })
+                .catch(function (response) {
+                    $scope.messages = {
+                        error: Array.isArray(response.data) ? response.data : [response.data]
+                    };
+                });
+        };
+    }]);
+
+
+angular.module('ProjectHarvestApp')
+  .factory('Account', ["$http", function($http) {
+    return {
+      updateProfile: function(data) {
+        return $http.put('/account', data);
+      },
+      changePassword: function(data) {
+        return $http.put('/account', data);
+      },
+      deleteAccount: function() {
+        return $http.delete('/account');
+      },
+      forgotPassword: function(data) {
+        return $http.post('/forgot', data);
+      },
+      resetPassword: function(data) {
+        return $http.post('/reset', data);
+      }
+    };
+  }]);
+angular.module('ProjectHarvestApp')
+  .factory('Contact', ["$http", function($http) {
+    return {
+      send: function(data) {
+        return $http.post('/contact', data);
+      }
+    };
+  }]);
+angular.module('ProjectHarvestApp')
+    .factory('Dashboard', ["$http", function($http) {
+        return {
+            // getGrows: function(data) {
+            //     return $http.get('/getGrows', data);
+            // }
+        };
+    }]);
+angular.module('ProjectHarvestApp')
+    .factory('System', ["$http", function($http) {
+        return {
+            newSystem: function(data) {
+                return $http.post('/newSystem', data);
+            }
+        };
+    }]);

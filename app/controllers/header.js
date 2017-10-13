@@ -1,4 +1,4 @@
-angular.module('BlumeApp')
+angular.module('ProjectHarvestApp')
   .controller('HeaderCtrl', function($scope, $location, $window, $auth) {
     $scope.isActive = function (viewLocation) {
       return viewLocation === $location.path();

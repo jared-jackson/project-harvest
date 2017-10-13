@@ -1,4 +1,4 @@
-angular.module('BlumeApp')
+angular.module('ProjectHarvestApp')
   .controller('ForgotCtrl', function($scope, Account) {
     $scope.forgotPassword = function() {
       Account.forgotPassword($scope.user)

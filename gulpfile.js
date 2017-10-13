@@ -24,7 +24,7 @@ gulp.task('angular', function() {
 
 gulp.task('templates', function() {
   return gulp.src('app/partials/**/*.html')
-    .pipe(templateCache({ root: 'partials', module: 'BlumeApp' }))
+    .pipe(templateCache({ root: 'partials', module: 'ProjectHarvestApp' }))
     .pipe(gulpif(argv.production, uglify()))
     .pipe(gulp.dest('public/js'));
 });

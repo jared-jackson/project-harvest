@@ -1,4 +1,4 @@
-angular.module('BlumeApp')
+angular.module('ProjectHarvestApp')
   .controller('ProfileCtrl', function($scope, $rootScope, $location, $window, $auth, Account) {
     $scope.profile = $rootScope.currentUser;
 
