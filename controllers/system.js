@@ -37,21 +37,20 @@ exports.newSystem = function (req, res) {
             });
         },
         function (system_object, done) {
-            var system_id = system_object.solarsystem[0]; //Only one system is ever returned. Duplicate systems are nonexistant
-            request(api_root + '/universe/systems/' + system_id + '/?datasource=tranquility&language=en-us', function (error, response) {
-                var new_system_object = JSON.parse(response.body);
-                if (error) {
-                    done(new Error("failed getting something system ID:" + error.message));
-                }
-                done(null, new_system_object);
-            });
+           if(!system_object.solarsystem){
+               return res.status(400).send({msg: 'There was an error parsing the System ID'});
+           } else {
+               var system_id = system_object.solarsystem[0];
+               request(api_root + '/universe/systems/' + system_id + '/?datasource=tranquility&language=en-us', function (error, response) {
+                   var new_system_object = JSON.parse(response.body);
+                   if (error) {
+                       done(new Error("failed getting something system ID:" + error.message));
+                   }
+                   done(null, new_system_object);
+               });
+           }
         },
         function (system_object, done) {
-
-
-            console.log(system_object);
-            console.log(req.user);
-
             System.findOne({system_id: system_object.system_id}, function (err, system) {
                 if (system) {
                     return res.status(400).send({msg: 'This system is already being monitored'});
@@ -70,7 +69,6 @@ exports.newSystem = function (req, res) {
                     }
                 });
             });
-
         }
     ]);
 };
