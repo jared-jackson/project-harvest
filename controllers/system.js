@@ -3,11 +3,9 @@ var moment = require('moment');
 var request = require('request');
 var System = require('../models/System');
 var User = require('../models/User');
-var uuid = require('uuid/v1');
-var q = require('q');
-
 var api_root = 'https://esi.tech.ccp.is/latest';
 request.json = true;
+
 exports.ensureAuthenticated = function (req, res, next) {
     if (req.isAuthenticated()) {
         next();
@@ -79,7 +77,6 @@ exports.getSystems = function (req, res) {
             System.find({}, function (err, system) {
                 done(null, system);
             });
-
         },
         function (system, done) {
             var our_systems = system;
@@ -92,8 +89,8 @@ exports.getSystems = function (req, res) {
                     //TODO Clean this up, it sucks.
                     var response_systems = [];
                     system_stats.filter(function(system){
-                        var filtered_object = {};
                         for(var index in our_systems){
+                            var filtered_object = {};
                             if(our_systems[index].system_id == system.system_id){
                                 filtered_object.system_name = our_systems[index].system_name;
                                 filtered_object.security_status = our_systems[index].security_status;
@@ -105,13 +102,9 @@ exports.getSystems = function (req, res) {
                         }
                         return null;
                     });
-                    res.status(200).send(response_systems);
+                    done(null, res.status(200).send(response_systems));
                 }
             });
         }
     ]);
 };
-
-function matchSystems(id_array){
-
-}

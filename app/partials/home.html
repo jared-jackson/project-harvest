@@ -1,15 +1,22 @@
 <div class="container-fluid">
-  <div class="row" id="grow" ng-repeat="grow in current_grows">
-    <div class="col-sm-10 col-xs-offset-1">
+  <div class="row">
+    <div class="col-sm-4" ng-repeat="system in current_systems track by $index">
       <div class="panel">
         <div class="panel-body">
-          <h3>{{grow.grow_name}}</h3>
-          <span>Environment : {{grow.environment}}</span>
+          <h3 style="text-transform: uppercase;">{{system.system_name}} : <span>{{system.security_status | number : 1}}</span></h3>
           <div class="horizontal-divider"></div>
-
           <div class="row">
-            <div class="col-md-2" id="{{vitals._id}}" ng-repeat="vitals in grow.grow_items">
-              <div class="radial" id="{{'plant' + vitals.plant_id + $index}}" ng-repeat=" vital in vitals.plant_vitals track by $index"></div>
+            <div class="col-md-2">
+              <!--<div class="radial" id="{{'plant' + vitals.plant_id + $index}}" ng-repeat=" vital in vitals.plant_vitals track by $index"></div>-->
+              <span>Ship Kills : {{system.ship_kills}}</span>
+            </div>
+            <div class="col-md-2">
+              <!--<div class="radial" id="{{'plant' + vitals.plant_id + $index}}" ng-repeat=" vital in vitals.plant_vitals track by $index"></div>-->
+              <span>Pod Kills : {{system.pod_kills}}</span>
+            </div>
+            <div class="col-md-2">
+              <!--<div class="radial" id="{{'plant' + vitals.plant_id + $index}}" ng-repeat=" vital in vitals.plant_vitals track by $index"></div>-->
+              <span>NPC Kills : {{system.npc_kills}}</span>
             </div>
           </div>
           <a href="#" role="button" class="btn btn-default">View details</a>
