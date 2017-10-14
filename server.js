@@ -21,6 +21,7 @@ var User = require('./models/User');
 var userController = require('./controllers/user');
 var contactController = require('./controllers/contact');
 var systemController = require('./controllers/system');
+var killController = require('./controllers/kills');
 
 var app = express();
 
@@ -67,15 +68,19 @@ app.post('/signup', userController.signupPost);
 app.post('/login', userController.loginPost);
 app.post('/forgot', userController.forgotPost);
 app.post('/reset/:token', userController.resetPost);
-app.get('/unlink/:provider', userController.ensureAuthenticated, userController.unlink);
-app.post('/auth/facebook', userController.authFacebook);
-app.get('/auth/facebook/callback', userController.authFacebookCallback);
-app.post('/auth/google', userController.authGoogle);
-app.get('/auth/google/callback', userController.authGoogleCallback);
-app.post('/auth/twitter', userController.authTwitter);
-app.get('/auth/twitter/callback', userController.authTwitterCallback);
+// app.get('/unlink/:provider', userController.ensureAuthenticated, userController.unlink);
+// app.post('/auth/facebook', userController.authFacebook);
+// app.get('/auth/facebook/callback', userController.authFacebookCallback);
+// app.post('/auth/google', userController.authGoogle);
+// app.get('/auth/google/callback', userController.authGoogleCallback);
+// app.post('/auth/twitter', userController.authTwitter);
+// app.get('/auth/twitter/callback', userController.authTwitterCallback);
 
-//Grow Routes
+//System Routes
+app.post('/newSystem', userController.ensureAuthenticated, systemController.newSystem);
+app.get('/getSystems', userController.ensureAuthenticated, systemController.getSystems);
+
+//Kill Routes
 app.post('/newSystem', userController.ensureAuthenticated, systemController.newSystem);
 app.get('/getSystems', userController.ensureAuthenticated, systemController.getSystems);
 
