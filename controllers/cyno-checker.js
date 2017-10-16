@@ -46,10 +46,8 @@ exports.checkCynoPilot = function (req, res) {
                 return res.status(400).send({msg: 'There was an retrieving the character ID'});
             } else {
                 var is_cyno = false;
-                console.log(zkill_api + '/losses/characterID/' + character_id + '/');
                 request(zkill_api + '/losses/characterID/' + character_id + '/', function (error, response) {
                     var status = response.statusCode;
-                    console.log(response.statusMessage);
                     var character_kills = JSON.parse(response.body);
                     if (error) {
                         done(new Error("failed getting this characters kills:" + error.message));
@@ -62,7 +60,6 @@ exports.checkCynoPilot = function (req, res) {
                                 }
                             }
                         });
-                        console.log(is_cyno);
                         done(null, res.status(status).send(is_cyno));
                     }
                 });

@@ -12,15 +12,18 @@ angular.module('ProjectHarvestApp', ['ngRoute', 'satellizer'])
       })
       .when('/contact', {
         templateUrl: 'partials/contact.html',
-        controller: 'ContactCtrl'
+        controller: 'ContactCtrl',
+        resolve: { loginRequired: loginRequired }
       })
       .when('/create', {
           templateUrl: 'partials/new-system.html',
-          controller: 'SystemCtrl'
+          controller: 'SystemCtrl',
+          resolve: { loginRequired: loginRequired }
       })
         .when('/cyno', {
             templateUrl: 'partials/cyno-checker.html',
-            controller: 'CynoCtrl'
+            controller: 'CynoCtrl',
+            resolve: { loginRequired: loginRequired }
         })
       .when('/login', {
         templateUrl: 'partials/login.html',
