@@ -10,10 +10,9 @@
       <a href="/" class="navbar-brand">Project Harvest</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav" ng-if="isAuthenticated()">
         <li ng-class="{ active: isActive('/')}"><a href="/">Dashboard</a></li>
-        <li ng-class="{ active: isActive('/kills')}"><a href="/contact">Kill Mails</a></li>
-        <li ng-class="{ active: isActive('/create')}"><a href="/create">+ Add System</a></li>
+        <li ng-class="{ active: isActive('/create')}"><a href="/create">Add System</a></li>
         <li ng-class="{ active: isActive('/cyno')}"><a href="/cyno">Cyno Checker</a></li>
       </ul>
       <ul ng-if="isAuthenticated()" class="nav navbar-nav navbar-right">
