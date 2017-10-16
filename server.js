@@ -21,7 +21,7 @@ var User = require('./models/User');
 var userController = require('./controllers/user');
 var contactController = require('./controllers/contact');
 var systemController = require('./controllers/system');
-var killController = require('./controllers/kills');
+var cynoController = require('./controllers/cyno-checker');
 
 var app = express();
 
@@ -80,9 +80,8 @@ app.post('/reset/:token', userController.resetPost);
 app.post('/newSystem', userController.ensureAuthenticated, systemController.newSystem);
 app.get('/getSystems', userController.ensureAuthenticated, systemController.getSystems);
 
-//Kill Routes
-app.post('/newSystem', userController.ensureAuthenticated, systemController.newSystem);
-app.get('/getSystems', userController.ensureAuthenticated, systemController.getSystems);
+//Cyno Checker Routes
+app.post('/checkCynoPilot', userController.ensureAuthenticated, cynoController.checkCynoPilot);
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'app', 'index.html'));

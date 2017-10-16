@@ -18,6 +18,10 @@ angular.module('ProjectHarvestApp', ['ngRoute', 'satellizer'])
           templateUrl: 'partials/new-system.html',
           controller: 'SystemCtrl'
       })
+        .when('/cyno', {
+            templateUrl: 'partials/cyno-checker.html',
+            controller: 'CynoCtrl'
+        })
       .when('/login', {
         templateUrl: 'partials/login.html',
         controller: 'LoginCtrl',
@@ -96,6 +100,25 @@ angular.module('ProjectHarvestApp')
         });
     };
   }]);
+
+angular.module('ProjectHarvestApp')
+    .controller('CynoCtrl', ["$scope", "$rootScope", "$http", "$location", "$window", "$auth", "Cyno", function ($scope, $rootScope, $http, $location, $window, $auth, Cyno) {
+        $scope.checkCynoPilot = function () {
+            var character_name = {
+                character_name: $scope.character.name
+            };
+            Cyno.checkCynoPilot(character_name)
+                .then(function (response) {
+                    $scope.is_cyno = response.data;
+                })
+                .catch(function (response) {
+                    $scope.messages = {
+                        error: Array.isArray(response.data) ? response.data : [response.data]
+                    };
+                });
+        };
+    }]);
+
 
 angular.module('ProjectHarvestApp')
     .controller('DashboardCtrl', ["$scope", "$rootScope", "$http", "$location", "$window", "$auth", "Dashboard", function ($scope, $rootScope, $http, $location, $window, $auth, Dashboard) {
@@ -422,6 +445,14 @@ angular.module('ProjectHarvestApp')
       }
     };
   }]);
+angular.module('ProjectHarvestApp')
+    .factory('Cyno', ["$http", function($http) {
+        return {
+            checkCynoPilot: function(data) {
+                return $http.post('/checkCynoPilot', data);
+            }
+        };
+    }]);
 angular.module('ProjectHarvestApp')
     .factory('Dashboard', ["$http", function($http) {
         return {

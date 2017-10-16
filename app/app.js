@@ -16,6 +16,10 @@ angular.module('ProjectHarvestApp', ['ngRoute', 'satellizer'])
           templateUrl: 'partials/new-system.html',
           controller: 'SystemCtrl'
       })
+        .when('/cyno', {
+            templateUrl: 'partials/cyno-checker.html',
+            controller: 'CynoCtrl'
+        })
       .when('/login', {
         templateUrl: 'partials/login.html',
         controller: 'LoginCtrl',
