@@ -6,6 +6,7 @@ angular.module('ProjectHarvestApp')
             };
             Cyno.checkCynoPilot(character_name)
                 .then(function (response) {
+                    $scope.messages = {};
                     $scope.is_cyno = response.data;
                 })
                 .catch(function (response) {

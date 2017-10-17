@@ -7,6 +7,9 @@
             <div ng-if="is_cyno == true" role="alert" class="alert alert-success">
                 <h2>MOTHAFUCKIN CYNO</h2>
             </div>
+            <div ng-if="messages.error" role="alert" class="alert alert-danger">
+                <div ng-repeat="error in messages.error">{{error.msg}}</div>
+            </div>
             <form ng-submit="checkCynoPilot()" class="form-horizontal">
                 <legend>Check to see if pilot is a cyno</legend>
                 <div class="form-group">

@@ -24,29 +24,28 @@ exports.checkCynoPilot = function (req, res) {
     }
     var character_name = req.body.character_name;
 
-    console.log(character_name);
-
     async.waterfall([
         function (done) {
             request(legacy_api_root + '/CharacterID.xml.aspx?names=' + character_name, function (error, response) {
-                var character_id;
+                var character = {};
                 if (error) {
                     done(new Error("failed getting something system ID:" + error.message));
                 } else {
                     parseString(response.body, function (err, result) {
                         var parsed_id = JSON.stringify(result.eveapi.result[0].rowset[0].row[0].$.characterID).replace(/['"]+/g, '');
-                        character_id = parseInt(parsed_id);
+                        character.character_id = parseInt(parsed_id);
+                        character.character_name = character_name;
                     });
                 }
-                done(null, character_id);
+                done(null, character);
             });
         },
-        function (character_id, done) {
-            if (!character_id) {
-                return res.status(400).send({msg: 'There was an retrieving the character ID'});
+        function (character, done) {
+            if (character.character_id == 0) {
+                return res.status(400).send({msg: 'There was an error retrieving cyno details for pilot : ' + character.character_name + '. Try checking the spelling of the pilots name.'});
             } else {
                 var is_cyno = false;
-                request(zkill_api + '/losses/characterID/' + character_id + '/', function (error, response) {
+                request(zkill_api + '/losses/characterID/' + character.character_id + '/', function (error, response) {
                     var status = response.statusCode;
                     var character_kills = JSON.parse(response.body);
                     if (error) {
@@ -55,7 +54,7 @@ exports.checkCynoPilot = function (req, res) {
                         character_kills.map(function (kill) {
                             var dropped_items = kill.victim.items;
                             for (var index in dropped_items) {
-                                if (dropped_items[index].item_type_id == 21096 || dropped_items[index].item_type_id == 28646) {
+                                if (dropped_items[index].item_type_id == 28646) { //If you want to check for newbie cyno as well : dropped_items[index].item_type_id == 21096 ||
                                     is_cyno = true;
                                 }
                             }
