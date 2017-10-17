@@ -44,25 +44,49 @@ exports.checkCynoPilot = function (req, res) {
             if (character.character_id == 0) {
                 return res.status(400).send({msg: 'There was an error retrieving cyno details for pilot : ' + character.character_name + '. Try checking the spelling of the pilots name.'});
             } else {
-                var is_cyno = false;
                 request(zkill_api + '/losses/characterID/' + character.character_id + '/', function (error, response) {
-                    var status = response.statusCode;
                     var character_kills = JSON.parse(response.body);
                     if (error) {
                         done(new Error("failed getting this characters kills:" + error.message));
                     } else {
-                        character_kills.map(function (kill) {
-                            var dropped_items = kill.victim.items;
-                            for (var index in dropped_items) {
-                                if (dropped_items[index].item_type_id == 28646) { //If you want to check for newbie cyno as well : dropped_items[index].item_type_id == 21096 ||
-                                    is_cyno = true;
+                        for (var kill in character_kills) {
+                            for (var items in character_kills[kill].victim.items) {
+                                var item_id = character_kills[kill].victim.items[items].item_type_id;
+                                if (item_id == 28646) {        //If you want to check for newbie cyno as well : dropped_items[index].item_type_id == 21096 ||
+                                    var kill_timestamp = character_kills[kill].killmail_time.replace(/-|T|:|Z/g, "");
+                                    kill_timestamp = kill_timestamp.substring(0, 10);
+                                    kill_timestamp = kill_timestamp + "00";
+                                    character.formatted_kill_time = kill_timestamp;
+                                    character.kill_time = character_kills[kill].killmail_time;
+                                    character.solar_system = character_kills[kill].solar_system_id;
+                                    character.alliance_id = character_kills[kill].victim.alliance_id;
+                                    character.victim_id = character_kills[kill].attackers[0].alliance_id;
+                                    character.is_cyno = true;
+                                    break;
                                 }
                             }
-                        });
-                        done(null, res.status(status).send(is_cyno));
+                            if (character.is_cyno) {
+                                break;
+                            }
+                        }
+                        done(null, character);
                     }
                 });
             }
+        },
+        function (character, done) {
+            var drop_info = character;
+            request(zkill_api + '/related/' + character.solar_system + '/' + character.formatted_kill_time + '/', function (error, response) {
+                var related_kills = JSON.parse(response.body);
+                if (error) {
+                    done(new Error("Failed getting related kills to the drop:" + error.message));
+                } else {
+                    drop_info.drop_region = related_kills.regionName;
+                    drop_info.drop_system = related_kills.systemName;
+                    drop_info.summary = related_kills.summary;
+                }
+                done(null, res.status(200).send(drop_info));
+            });
         }
     ]);
 };
