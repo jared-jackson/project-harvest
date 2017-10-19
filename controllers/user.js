@@ -53,7 +53,7 @@ exports.loginPost = function (req, res, next) {
             if (!isMatch) {
                 return res.status(401).send({msg: 'Invalid email or password'});
             }
-            res.send({token: generateToken(user), user: user.toJSON()});
+            res.send({token: generateToken(user), user: user.toJSON()});000
         });
     });
 };

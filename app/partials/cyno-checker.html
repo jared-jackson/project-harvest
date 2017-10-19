@@ -2,12 +2,6 @@
     <div class="row">
         <div class="panel">
             <div class="panel-body">
-                <div ng-if="is_cyno == false" role="alert" class="alert alert-danger">
-                    <h2>NO CYNO</h2>
-                </div>
-                <div ng-if="is_cyno == true" role="alert" class="alert alert-success">
-                    <h2>MOTHAFUCKIN CYNO</h2>
-                </div>
                 <div ng-if="messages.error" role="alert" class="alert alert-danger">
                     <div ng-repeat="error in messages.error">{{error.msg}}</div>
                 </div>
@@ -24,12 +18,18 @@
                             <button type="submit" class="btn btn-success">Check Character</button>
                         </div>
                     </div>
+                    <div ng-if="cyno_data.is_cyno == false" role="alert" class="alert alert-danger">
+                        <h2>NO CYNO</h2>
+                    </div>
+                    <div ng-if="cyno_data.is_cyno == true" role="alert" class="alert alert-success">
+                        <h2>MOTHAFUCKIN CYNO</h2>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="row" ng-show="cyno_data.is_cyno">
+    <div class="row" ng-show="battle_summary">
         <div class="panel">
             <div class="panel-body">
                 <h3 style="text-transform: uppercase;">{{hot_drop_corp}} VS. {{victim_corp}} on
@@ -58,6 +58,4 @@
             </div>
         </div>
     </div>
-
-
 </div>

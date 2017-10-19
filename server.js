@@ -83,6 +83,7 @@ app.get('/getSystems', userController.ensureAuthenticated, systemController.getS
 //Cyno Checker Routes
 app.post('/checkCynoPilot', userController.ensureAuthenticated, cynoController.checkCynoPilot);
 
+
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'app', 'index.html'));
 });

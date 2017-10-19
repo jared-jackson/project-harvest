@@ -41,6 +41,7 @@ exports.checkCynoPilot = function (req, res) {
             });
         },
         function (character, done) {
+            character.is_cyno = false;
             if (character.character_id == 0) {
                 return res.status(400).send({msg: 'There was an error retrieving cyno details for pilot : ' + character.character_name + '. Try checking the spelling of the pilots name.'});
             } else {
@@ -81,9 +82,9 @@ exports.checkCynoPilot = function (req, res) {
                 if (error) {
                     done(new Error("Failed getting related kills to the drop:" + error.message));
                 } else {
-                    drop_info.drop_region = related_kills.regionName;
-                    drop_info.drop_system = related_kills.systemName;
-                    drop_info.summary = related_kills.summary;
+                    drop_info.drop_region = related_kills.regionName || "unknown";
+                    drop_info.drop_system = related_kills.systemName || "unknown";
+                    drop_info.summary = related_kills.summary || null;
                 }
                 done(null, res.status(200).send(drop_info));
             });
