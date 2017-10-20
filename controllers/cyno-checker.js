@@ -51,19 +51,22 @@ exports.checkCynoPilot = function (req, res) {
                         done(new Error("failed getting this characters kills:" + error.message));
                     } else {
                         for (var kill in character_kills) {
-                            for (var items in character_kills[kill].victim.items) {
-                                var item_id = character_kills[kill].victim.items[items].item_type_id;
-                                if (item_id == 28646) {        //If you want to check for newbie cyno as well : dropped_items[index].item_type_id == 21096 ||
-                                    var kill_timestamp = character_kills[kill].killmail_time.replace(/-|T|:|Z/g, "");
-                                    kill_timestamp = kill_timestamp.substring(0, 10);
-                                    kill_timestamp = kill_timestamp + "00";
-                                    character.formatted_kill_time = kill_timestamp;
-                                    character.kill_time = character_kills[kill].killmail_time;
-                                    character.solar_system = character_kills[kill].solar_system_id;
-                                    character.alliance_id = character_kills[kill].victim.alliance_id;
-                                    character.victim_id = character_kills[kill].attackers[0].alliance_id;
-                                    character.is_cyno = true;
-                                    break;
+                            if (character_kills[kill].victim.ship_type_id != 606 && character_kills[kill].victim.ship_type_id != 601 && character_kills[kill].victim.ship_type_id != 596 && character_kills[kill].victim.ship_type_id != 588) { // exclude rookie ships
+                                for (var items in character_kills[kill].victim.items) {
+                                    var item_id = character_kills[kill].victim.items[items].item_type_id;
+                                    if (item_id == 28646 || item_id == 21096) {        //If you want to check for newbie cyno as well : dropped_items[index].item_type_id == 21096 ||
+                                        var kill_timestamp = character_kills[kill].killmail_time.replace(/-|T|:|Z/g, "");
+                                        kill_timestamp = kill_timestamp.substring(0, 10);
+                                        kill_timestamp = kill_timestamp + "00";
+                                        character.formatted_kill_time = kill_timestamp;
+                                        character.kill_time = character_kills[kill].killmail_time;
+                                        character.kill_mail_id = "https://zkillboard.com/kill/" + character_kills[kill].killmail_id + "/";
+                                        character.solar_system = character_kills[kill].solar_system_id;
+                                        character.alliance_id = character_kills[kill].victim.alliance_id;
+                                        character.victim_id = character_kills[kill].attackers[0].alliance_id;
+                                        character.is_cyno = true;
+                                        break;
+                                    }
                                 }
                             }
                             if (character.is_cyno) {

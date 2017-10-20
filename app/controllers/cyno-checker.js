@@ -15,8 +15,8 @@ angular.module('ProjectHarvestApp')
                     $scope.cyno_data = response.data;
                     if ($scope.cyno_data.drop_region != "unknown") {
                         $scope.battle_summary = true;
-                        var alliance_name = $scope.cyno_data.alliance_id.toString();
-                        var victim_alliance_name = $scope.cyno_data.victim_id.toString();
+                        var alliance_name = $scope.cyno_data.alliance_id;
+                        var victim_alliance_name = $scope.cyno_data.victim_id;
                         $scope.hot_drop_corp = $scope.cyno_data.summary.teamB.entities[alliance_name];
                         $scope.victim_corp = $scope.cyno_data.summary.teamA.entities[victim_alliance_name];
                         $scope.team_a = $scope.cyno_data.summary.teamA;

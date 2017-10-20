@@ -67,9 +67,9 @@ footer {
 /* Navbar
 /* ------------------------- */
 
-.navbar-default {
-  background-color: #fff;
-  border-color: #e0e0e0;
+.navbar-default { /*Default changed from white, border color commented out*/
+  background-color: rgba(0, 0, 0, 0.0);
+  /*border-color: #e0e0e0;*/
 }
 
 .navbar-default .navbar-nav {
