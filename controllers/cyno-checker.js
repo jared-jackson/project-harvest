@@ -23,7 +23,11 @@ exports.checkCynoPilot = function (req, res) {
         return res.status(400).send(errors);
     }
     var character_name = req.body.character_name;
-
+    var options = {
+        url: "",
+        json: true,
+        headers: {'User-Agent': 'request'}
+    };
     async.waterfall([
         function (done) {
             request(legacy_api_root + '/CharacterID.xml.aspx?names=' + character_name, function (error, response) {
@@ -45,8 +49,9 @@ exports.checkCynoPilot = function (req, res) {
             if (character.character_id == 0) {
                 return res.status(400).send({msg: 'There was an error retrieving cyno details for pilot : ' + character.character_name + '. Try checking the spelling of the pilots name.'});
             } else {
-                request(zkill_api + '/losses/characterID/' + character.character_id + '/', function (error, response) {
-                    var character_kills = JSON.parse(response.body);
+                options.url = zkill_api + '/losses/characterID/' + character.character_id + '/';
+                request(options, function (error, response) {
+                    var character_kills = response.body;
                     if (error) {
                         done(new Error("failed getting this characters kills:" + error.message));
                     } else {
@@ -80,8 +85,9 @@ exports.checkCynoPilot = function (req, res) {
         },
         function (character, done) {
             var drop_info = character;
-            request(zkill_api + '/related/' + character.solar_system + '/' + character.formatted_kill_time + '/', function (error, response) {
-                var related_kills = JSON.parse(response.body);
+            options.url = zkill_api + '/related/' + character.solar_system + '/' + character.formatted_kill_time + '/';
+            request(options, function (error, response) {
+                var related_kills = response.body;
                 if (error) {
                     done(new Error("Failed getting related kills to the drop:" + error.message));
                 } else {

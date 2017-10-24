@@ -5,7 +5,8 @@ angular.module('ProjectHarvestApp', ['ngRoute', 'satellizer'])
         $routeProvider
             .when('/', {
                 templateUrl: 'partials/home.html',
-                controller: 'HomeCtrl'
+                controller: 'HomeCtrl',
+                resolve: {loginRequired: loginRequired}
             })
             .when('/contact', {
                 templateUrl: 'partials/contact.html',

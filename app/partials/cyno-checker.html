@@ -37,21 +37,21 @@
                 <div class="horizontal-divider"></div>
 
                 <div class="col-md-6" style="padding-top: 10px;">
-                    <div class="col-md-10" style="background-color: #00aced; height: 75px; padding-top: 5px;" ng-repeat="ship in team_b.list">
+                    <div class="col-md-10 kill_card" style="background-color: #ffffff; height: 75px; margin-bottom: 10px;" ng-repeat="ship in team_b.list">
                         <span>Character : {{ship.characterName}}</span>
                         <br/>
                         <span>Ship : {{ship.shipName}}</span>
                         <br/>
-                        <span>Died? : {{ship.isVictim}}</span>
+                        <span>Corp : {{ship.corporationName}}</span>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="col-md-10" style="background-color: #00aced; height: 75px;" ng-repeat="ship in team_a.list">
+                <div class="col-md-6" style="margin-top: 10px;">
+                    <div class="col-md-10 kill_card"  id="{{ship.characterID}}" ng-repeat="ship in team_a.list">
                         <span>Character : {{ship.characterName}}</span>
                         <br/>
                         <span>Ship : {{ship.shipName}}</span>
                         <br/>
-                        <span>Died? : {{ship.isVictim}}</span>
+                        <span>Corp : {{ship.corporationName}}</span>
                     </div>
                 </div>
                 <a href="{{cyno_data.kill_mail_id}}" target="_blank" role="button" class="btn btn-default">View Kill Details</a>

@@ -103,4 +103,9 @@ app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
 
+//Keep Program from terminating on exception being thrown
+process.on('uncaughtException', function (err) {
+    console.log(err); //TODO log exceptions being thrown better. This is NOT how you're supposed to do it.
+});
+
 module.exports = app;

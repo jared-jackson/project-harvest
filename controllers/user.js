@@ -82,6 +82,7 @@ exports.signupPost = function (req, res, next) {
             name: req.body.name,
             email: req.body.email,
             authorized: false,
+            director: false,
             password: req.body.password
         });
         user.save(function (err) {
