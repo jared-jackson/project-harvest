@@ -3,7 +3,6 @@ var moment = require('moment');
 var parseString = require('xml2js').parseString;
 var request = require('request');
 var User = require('../models/User');
-var api_root = 'https://esi.tech.ccp.is/latest';
 var legacy_api_root = 'http://api.eve-online.com/eve';
 var zkill_api = 'https://zkillboard.com/api';
 request.json = true;

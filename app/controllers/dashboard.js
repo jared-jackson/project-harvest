@@ -1,6 +1,8 @@
 angular.module('ProjectHarvestApp')
     .controller('DashboardCtrl', function ($scope, $rootScope, $http, $location, $window, $auth, Dashboard) {
 
+        var socket = io();
+
         Dashboard.getSystems($rootScope.currentUser)
             .then(function (response) {
                  $scope.current_systems = response.data;

@@ -25,6 +25,13 @@ var cynoController = require('./controllers/cyno-checker');
 
 var app = express();
 
+//Socket.IO Initialization
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+
+
+//Database Initialization
 mongoose.connect(process.env.MONGODB);
 mongoose.connection.on('error', function() {
   console.log('MongoDB Connection Error. Please make sure that MongoDB is running.');

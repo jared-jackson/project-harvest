@@ -4,7 +4,14 @@ var request = require('request');
 var System = require('../models/System');
 var User = require('../models/User');
 var api_root = 'https://esi.tech.ccp.is/latest';
+var zkill_api = 'https://zkillboard.com/api';
 request.json = true;
+
+var options = {
+    url: "",
+    json: true,
+    headers: {'User-Agent': 'request'}
+};
 
 exports.ensureAuthenticated = function (req, res, next) {
     if (req.isAuthenticated()) {
@@ -35,18 +42,18 @@ exports.newSystem = function (req, res) {
             });
         },
         function (system_object, done) {
-           if(!system_object.solarsystem){
-               return res.status(400).send({msg: 'There was an error parsing the System ID'});
-           } else {
-               var system_id = system_object.solarsystem[0];
-               request(api_root + '/universe/systems/' + system_id + '/?datasource=tranquility&language=en-us', function (error, response) {
-                   var new_system_object = JSON.parse(response.body);
-                   if (error) {
-                       done(new Error("failed getting something system ID:" + error.message));
-                   }
-                   done(null, new_system_object);
-               });
-           }
+            if (!system_object.solarsystem) {
+                return res.status(400).send({msg: 'There was an error parsing the System ID'});
+            } else {
+                var system_id = system_object.solarsystem[0];
+                request(api_root + '/universe/systems/' + system_id + '/?datasource=tranquility&language=en-us', function (error, response) {
+                    var new_system_object = JSON.parse(response.body);
+                    if (error) {
+                        done(new Error("failed getting something system ID:" + error.message));
+                    }
+                    done(null, new_system_object);
+                });
+            }
         },
         function (system_object, done) {
             System.findOne({system_id: system_object.system_id}, function (err, system) {
@@ -75,35 +82,28 @@ exports.getSystems = function (req, res) {
     async.waterfall([
         function (done) {
             System.find({}, function (err, system) {
-                done(null, system);
+                var systems_array = system.map(function (system) {
+                    return system;
+                });
+                done(null, systems_array);
             });
         },
         function (system, done) {
-            var our_systems = system;
-            request(api_root + '/universe/system_kills/?datasource=tranquility', function (error, response) {
-                var system_stats;
-                if (error) {
-                    res.status(400).send({msg: 'Error getting system information'});
-                } else {
-                    system_stats = JSON.parse(response.body);
-                    //TODO Clean this up, it sucks.
-                    var response_systems = [];
-                    system_stats.filter(function(system){
-                        for(var index in our_systems){
-                            var filtered_object = {};
-                            if(our_systems[index].system_id == system.system_id){
-                                filtered_object.system_name = our_systems[index].system_name;
-                                filtered_object.security_status = our_systems[index].security_status;
-                                filtered_object.ship_kills = system.ship_kills;
-                                filtered_object.npc_kills = system.npc_kills;
-                                filtered_object.pod_kills = system.pod_kills;
-                                response_systems.push(filtered_object);
-                            }
+            var our_systems_ids = system;
+            options.url = zkill_api + '/kills/regionID/10000003/';  //Hardcoded to Vale of The Silent
+            request(options, function (error, response) {
+                var region_stats = response.body;
+                var found = region_stats.filter(function (el) {
+                    var relevant_systems = {};
+                    for(var id in our_systems_ids){
+                        if(our_systems_ids[id].system_id === el.solar_system_id){
+                            relevant_systems = el;
+                            relevant_systems.system_name = our_systems_ids[id].system_name;
+                            return relevant_systems;
                         }
-                        return null;
-                    });
-                    done(null, res.status(200).send(response_systems));
-                }
+                    }
+                });
+                done(null, res.status(200).send(found));
             });
         }
     ]);
