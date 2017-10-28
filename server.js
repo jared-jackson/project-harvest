@@ -12,7 +12,7 @@ var moment = require('moment');
 var async = require('async');
 var request = require('request');
 
-// Load environment variables from .env file
+// Load environment variables from ..env file
 dotenv.load();
 
 // Models
@@ -125,8 +125,14 @@ dashboard.on('connection', function (socket) {
                     for (var id in systems_array) {
                         if (systems_array[id].system_id === el.solar_system_id) {
                             relevant_systems = el;
+                            relevant_systems.killmail_time = relevant_systems.killmail_time.replace("T", " ").replace("Z", "");
+                            var dateObj = new Date(relevant_systems.killmail_time);
+                            relevant_systems.killmail_time = moment(dateObj).format('MMMM Do YYYY, HH:mm a'); // 2016-07-15
                             relevant_systems.system_name = systems_array[id].system_name;
-                            relevant_systems.last_updated = Date(Date.now()).toLocaleString();
+                            var current_time = Date.now();
+                            relevant_systems.last_updated = moment(current_time).format('MMMM Do YYYY, HH:mm a');
+
+                           console.log(relevant_systems.last_updated);
                             return relevant_systems;
                         }
                     }

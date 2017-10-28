@@ -146,7 +146,12 @@ angular.module('ProjectHarvestApp')
         var socket = io("/dashboard");
 
         socket.on('getInsights', function(response) {
-            $scope.insights = response;
+
+            $scope.$apply(function() {
+                $scope.insights = response;
+            });
+
+
         })
 
 

@@ -294,7 +294,7 @@ exports.resetPost = function (req, res, next) {
 //   var params = {
 //     code: req.body.code,
 //     client_id: req.body.clientId,
-//     client_secret: process.env.FACEBOOK_SECRET,
+//     client_secret: process..env.FACEBOOK_SECRET,
 //     redirect_uri: req.body.redirectUri
 //   };
 //
@@ -367,7 +367,7 @@ exports.resetPost = function (req, res, next) {
 //   var params = {
 //     code: req.body.code,
 //     client_id: req.body.clientId,
-//     client_secret: process.env.GOOGLE_SECRET,
+//     client_secret: process..env.GOOGLE_SECRET,
 //     redirect_uri: req.body.redirectUri,
 //     grant_type: 'authorization_code'
 //   };
@@ -436,8 +436,8 @@ exports.resetPost = function (req, res, next) {
 //   // Part 1 of 2: Initial POST request to obtain OAuth request token.
 //   if (!req.body.oauth_token || !req.body.oauth_verifier) {
 //     var requestTokenOauthSignature = {
-//       consumer_key: process.env.TWITTER_KEY,
-//       consumer_secret: process.env.TWITTER_SECRET,
+//       consumer_key: process..env.TWITTER_KEY,
+//       consumer_secret: process..env.TWITTER_SECRET,
 //       callback: req.body.redirectUri
 //     };
 //
@@ -455,8 +455,8 @@ exports.resetPost = function (req, res, next) {
 //     // Part 2 of 2: Second POST request after "Authorize app" button is clicked.
 //     // OAuth 2.0 basically starts from Part 2, but with OAuth 1.0 we need to do that extra step in Part 1.
 //     var accessTokenOauth = {
-//       consumer_key: process.env.TWITTER_KEY,
-//       consumer_secret: process.env.TWITTER_SECRET,
+//       consumer_key: process..env.TWITTER_KEY,
+//       consumer_secret: process..env.TWITTER_SECRET,
 //       token: req.body.oauth_token,
 //       verifier: req.body.oauth_verifier
 //     };
@@ -466,8 +466,8 @@ exports.resetPost = function (req, res, next) {
 //       accessToken = qs.parse(accessToken);
 //
 //       var profileOauth = {
-//         consumer_key: process.env.TWITTER_KEY,
-//         consumer_secret: process.env.TWITTER_SECRET,
+//         consumer_key: process..env.TWITTER_KEY,
+//         consumer_secret: process..env.TWITTER_SECRET,
 //         oauth_token: accessToken.oauth_token
 //       };
 //
