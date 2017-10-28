@@ -5,8 +5,6 @@ var System = require('../models/System');
 var User = require('../models/User');
 var api_root = 'https://esi.tech.ccp.is/latest';
 var zkill_api = 'https://zkillboard.com/api';
-request.json = true;
-
 var options = {
     url: "",
     json: true,

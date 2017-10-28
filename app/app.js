@@ -3,11 +3,6 @@ angular.module('ProjectHarvestApp', ['ngRoute', 'satellizer'])
         $locationProvider.html5Mode(true);
 
         $routeProvider
-            .when('/', {
-                templateUrl: 'partials/home.html',
-                controller: 'HomeCtrl',
-                resolve: {loginRequired: loginRequired}
-            })
             .when('/contact', {
                 templateUrl: 'partials/contact.html',
                 controller: 'ContactCtrl',
@@ -18,7 +13,7 @@ angular.module('ProjectHarvestApp', ['ngRoute', 'satellizer'])
                 controller: 'SystemCtrl',
                 resolve: {loginRequired: loginRequired}
             })
-            .when('/insights', {
+            .when('/', {
                 templateUrl: 'partials/insights.html',
                 controller: 'DashboardCtrl',
                 resolve: {loginRequired: loginRequired}

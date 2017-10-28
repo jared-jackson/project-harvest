@@ -5,11 +5,6 @@ angular.module('ProjectHarvestApp', ['ngRoute', 'satellizer'])
         $locationProvider.html5Mode(true);
 
         $routeProvider
-            .when('/', {
-                templateUrl: 'partials/home.html',
-                controller: 'HomeCtrl',
-                resolve: {loginRequired: loginRequired}
-            })
             .when('/contact', {
                 templateUrl: 'partials/contact.html',
                 controller: 'ContactCtrl',
@@ -20,7 +15,7 @@ angular.module('ProjectHarvestApp', ['ngRoute', 'satellizer'])
                 controller: 'SystemCtrl',
                 resolve: {loginRequired: loginRequired}
             })
-            .when('/insights', {
+            .when('/', {
                 templateUrl: 'partials/insights.html',
                 controller: 'DashboardCtrl',
                 resolve: {loginRequired: loginRequired}
@@ -148,44 +143,49 @@ angular.module('ProjectHarvestApp')
 angular.module('ProjectHarvestApp')
     .controller('DashboardCtrl', ["$scope", "$rootScope", "$http", "$location", "$window", "$auth", "Dashboard", function ($scope, $rootScope, $http, $location, $window, $auth, Dashboard) {
 
-        var socket = io();
+        var socket = io("/dashboard");
 
-        Dashboard.getSystems($rootScope.currentUser)
-            .then(function (response) {
-                 $scope.current_systems = response.data;
-                 console.log(response.data);
-                // $scope.plant_ids = $.map(response.data, function (value) {
-                //     var plant_ids = [];
-                //     for (var x in value) {
-                //         plant_ids.push(value.grow_items[x].plant_id);
-                //     }
-                //     return plant_ids;
-                // });
-                // $scope.plant_vitals = $.map(response.data, function (value) {
-                //     var plant_vitals = [];
-                //     for (var x in value.grow_items) {
-                //         plant_vitals.push(value.grow_items[x].plant_vitals);
-                //     }
-                //     return plant_vitals;
-                // });
-                setTimeout(function () {
-                    var index = 0;
-                    $scope.circles = assembleRadials($scope.current_systems);
-                    // $.map($scope.plant_vitals, function (vital) {
-                    //     for (var plant_vital in vital) {
-                    //         $scope.circles[index].animate(vital[plant_vital]);
-                    //         index++;
-                    //     }
-                    //     return null;
-                    // });
-                    $scope.loading = false;
-                }, 200);
-            })
-            .catch(function (response) {
-                $scope.messages = {
-                    error: Array.isArray(response.data) ? response.data : [response.data]
-                };
-            });
+        socket.on('getInsights', function(response) {
+            $scope.insights = response;
+        })
+
+
+        // Dashboard.getSystems($rootScope.currentUser)
+        //     .then(function (response) {
+        //          $scope.current_systems = response.data;
+        //          console.log(response.data);
+        //         // $scope.plant_ids = $.map(response.data, function (value) {
+        //         //     var plant_ids = [];
+        //         //     for (var x in value) {
+        //         //         plant_ids.push(value.grow_items[x].plant_id);
+        //         //     }
+        //         //     return plant_ids;
+        //         // });
+        //         // $scope.plant_vitals = $.map(response.data, function (value) {
+        //         //     var plant_vitals = [];
+        //         //     for (var x in value.grow_items) {
+        //         //         plant_vitals.push(value.grow_items[x].plant_vitals);
+        //         //     }
+        //         //     return plant_vitals;
+        //         // });
+        //         setTimeout(function () {
+        //             var index = 0;
+        //             $scope.circles = assembleRadials($scope.current_systems);
+        //             // $.map($scope.plant_vitals, function (vital) {
+        //             //     for (var plant_vital in vital) {
+        //             //         $scope.circles[index].animate(vital[plant_vital]);
+        //             //         index++;
+        //             //     }
+        //             //     return null;
+        //             // });
+        //             $scope.loading = false;
+        //         }, 200);
+        //     })
+        //     .catch(function (response) {
+        //         $scope.messages = {
+        //             error: Array.isArray(response.data) ? response.data : [response.data]
+        //         };
+        //     });
     }]);
 
 function assembleRadials(systems) {
