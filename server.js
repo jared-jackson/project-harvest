@@ -84,7 +84,10 @@ app.post('/reset/:token', userController.resetPost);
 
 //System Routes
 app.post('/newSystem', userController.ensureAuthenticated, systemController.newSystem);
-app.get('/getSystems', userController.ensureAuthenticated, systemController.getSystems);
+
+dashboard = io.of('dashboard');
+dashboard.on('connection',  systemController.getSystems);
+
 
 //Cyno Checker Routes
 app.post('/checkCynoPilot', userController.ensureAuthenticated, cynoController.checkCynoPilot);
@@ -97,61 +100,6 @@ app.get('*', function (req, res) {
     res.redirect('/#' + req.originalUrl);
 });
 
-
-var clients = {};
-dashboard = io.of('dashboard');
-dashboard.on('connection', function (socket) {
-    console.log('Client ' + socket.id + ' is connected');
-    clients[socket.id] = true;
-    var requestLoop;
-
-    var zkill_api = 'https://zkillboard.com/api';
-    var options = {
-        url: "",
-        json: true,
-        headers: {'User-Agent': 'request'}
-    };
-
-    System.find({}, function (err, system) {
-        var systems_array = system.map(function (system) {
-            return system;
-        });
-        options.url = zkill_api + '/kills/regionID/10000003/';  //Hardcoded to Vale of The Silent
-        requestLoop = setInterval(function () {
-            request(options, function (error, response) {
-                var region_stats = response.body;
-                var found = region_stats.filter(function (el) {
-                    var relevant_systems = {};
-                    for (var id in systems_array) {
-                        if (systems_array[id].system_id === el.solar_system_id) {
-                            relevant_systems = el;
-                            relevant_systems.killmail_time = relevant_systems.killmail_time.replace("T", " ").replace("Z", "");
-                            var dateObj = new Date(relevant_systems.killmail_time);
-                            relevant_systems.killmail_time = moment(dateObj).format('MMMM Do YYYY, HH:mm a'); // 2016-07-15
-                            relevant_systems.system_name = systems_array[id].system_name;
-                            var current_time = Date.now();
-                            relevant_systems.last_updated = moment(current_time).format('MMMM Do YYYY, HH:mm a');
-
-                           console.log(relevant_systems.last_updated);
-                            return relevant_systems;
-                        }
-                    }
-                });
-                socket.emit("getInsights", found);
-            });
-        }, 25000);
-    });
-
-    // Goodbye client!
-    socket.on('disconnect', function () {
-        console.log("disconnected: dashboard, id: " + socket.id);
-        clearInterval(requestLoop);
-        //TODO we need to remove the client ID from stack
-
-    });
-
-});
-
 // Production error handler
 if (app.get('env') === 'production') {
     app.use(function (err, req, res, next) {
@@ -160,19 +108,14 @@ if (app.get('env') === 'production') {
     });
 }
 
-// app.listen(app.get('port'), function() {
-//   console.log('Express server listening on port ' + app.get('port'));
-// });
-
 http.listen(app.get('port'), function () {
     console.log('Server listening on port ' + app.get('port'));
 });
 
-
 //Keep Program from terminating on exception being thrown
-process.on('uncaughtException', function (err) {
-    console.log(err); //TODO log exceptions being thrown better. This is NOT how you're supposed to do it.
-});
+// process.on('uncaughtException', function (err) {
+//     console.log(err); //TODO log exceptions being thrown better. This is NOT how you're supposed to do it.
+// });
 
 
 module.exports = app;

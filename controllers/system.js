@@ -4,12 +4,6 @@ var request = require('request');
 var System = require('../models/System');
 var User = require('../models/User');
 var api_root = 'https://esi.tech.ccp.is/latest';
-var zkill_api = 'https://zkillboard.com/api';
-var options = {
-    url: "",
-    json: true,
-    headers: {'User-Agent': 'request'}
-};
 
 exports.ensureAuthenticated = function (req, res, next) {
     if (req.isAuthenticated()) {
@@ -76,33 +70,50 @@ exports.newSystem = function (req, res) {
     ]);
 };
 
-exports.getSystems = function (req, res) {
-    async.waterfall([
-        function (done) {
-            System.find({}, function (err, system) {
-                var systems_array = system.map(function (system) {
-                    return system;
-                });
-                done(null, systems_array);
+exports.getSystems = function (socket) {
+    var clients = {};
+    console.log('Client ' + socket.id + ' is connected');
+    clients[socket.id] = true;
+    var requestLoop;
+    var zkill_api = 'https://zkillboard.com/api';
+    var options = {
+        url: "",
+        json: true,
+        headers: {'User-Agent': 'request'}
+    };
+    (function insights() {
+        System.find({}, function (err, system) {
+            var systems_array = system.map(function (system) {
+                return system;
             });
-        },
-        function (system, done) {
-            var our_systems_ids = system;
             options.url = zkill_api + '/kills/regionID/10000003/';  //Hardcoded to Vale of The Silent
             request(options, function (error, response) {
                 var region_stats = response.body;
                 var found = region_stats.filter(function (el) {
                     var relevant_systems = {};
-                    for(var id in our_systems_ids){
-                        if(our_systems_ids[id].system_id === el.solar_system_id){
+                    for (var id in systems_array) {
+                        if (systems_array[id].system_id === el.solar_system_id) {
                             relevant_systems = el;
-                            relevant_systems.system_name = our_systems_ids[id].system_name;
+                            relevant_systems.killmail_time = relevant_systems.killmail_time.replace("T", " ").replace("Z", "");
+                            var dateObj = new Date(relevant_systems.killmail_time);
+                            relevant_systems.killmail_time = moment(dateObj).format('MMMM Do YYYY, HH:mm a'); // 2016-07-15
+                            relevant_systems.system_name = systems_array[id].system_name;
+                            var current_time = Date.now();
+                            relevant_systems.last_updated = moment(current_time).format('MMMM Do YYYY, HH:mm a');
                             return relevant_systems;
                         }
                     }
                 });
-                done(null, res.status(200).send(found));
+                socket.emit("getInsights", found);
             });
-        }
-    ]);
+        });
+        setTimeout(insights, 25000);
+    })();
+
+    // Goodbye client!
+    socket.on('disconnect', function () {
+        console.log("disconnected: dashboard, id: " + socket.id);
+        clearInterval(requestLoop);
+        //TODO we need to remove the client ID from stack
+    });
 };
